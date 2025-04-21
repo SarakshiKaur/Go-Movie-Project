@@ -78,6 +78,19 @@ func getMovies(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(movies)
 }
 
+func checkIfIdExists(id string) bool {
+	// we are checking if id exists in the movies array
+	// _ is the index place we don't want that so we are ignoring it using _
+	// movie variable will have actuall value of each movie from movies array
+	for _, movie := range movies {
+		if movie.ID == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 func getMovie(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -86,7 +99,7 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id >= len(movies) || id < 0 {
+	if !checkIfIdExists(vars["id"]) {
 		http.Error(w, "Movie not found", http.StatusNotFound)
 		return
 	}
@@ -104,7 +117,7 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id >= len(movies) || id < 0 {
+	if !checkIfIdExists(vars["id"]) {
 		http.Error(w, "Movie not found", http.StatusNotFound)
 		return
 	}
